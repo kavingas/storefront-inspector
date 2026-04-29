@@ -484,8 +484,19 @@ function parseSnowplowParams(params) {
         else if (e === 'se') {
             const cat = params.get('se_ca');
             const act = params.get('se_ac');
-            if (cat === 'product' && act === 'view') eventName = 'product-page-view';
-            else eventName = act || cat || null;
+            if (cat === 'product' && act === 'view') {
+                eventName = 'product-page-view';
+            } else if (cat === 'recommendation-unit') {
+                const SP_REC_ACTION = {
+                    'view':                  'recs-unit-view',
+                    'impression-render':     'recs-unit-impression-render',
+                    'rec-click':             'recs-item-click',
+                    'rec-add-to-cart-click': 'recs-item-add-to-cart-click',
+                };
+                eventName = SP_REC_ACTION[act] || null;
+            } else {
+                eventName = act || cat || null;
+            }
         }
     }
 
@@ -497,9 +508,30 @@ function parseSnowplowParams(params) {
             try {
                 // { schema: "iglu:...contexts...", data: [ { schema: "iglu:.../context-name/...", data: {...} } ] }
                 const ctx = JSON.parse(text);
+                const recUnits = [];
+                const recItemsByUnitId = {};
                 for (const entity of (ctx?.data || [])) {
-                    const key = schemaNameToKey(entity.schema || '');
-                    if (key) eventInfo[key] = entity.data;
+                    const schemaName = (entity.schema || '').split('/')[1];
+                    if (schemaName === 'recommendation-unit') {
+                        recUnits.push(entity.data);
+                    } else if (schemaName === 'recommended-item') {
+                        const uid = entity.data?.unitId;
+                        if (uid) {
+                            if (!recItemsByUnitId[uid]) recItemsByUnitId[uid] = [];
+                            recItemsByUnitId[uid].push(entity.data);
+                        }
+                    } else {
+                        const key = schemaNameToKey(entity.schema || '');
+                        if (key) eventInfo[key] = entity.data;
+                    }
+                }
+                if (recUnits.length > 0) {
+                    eventInfo.recommendationsContext = {
+                        units: recUnits.map(unit => ({
+                            ...unit,
+                            products: recItemsByUnitId[unit.unitId] || []
+                        }))
+                    };
                 }
             } catch (_) {}
         }

@@ -2,25 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Commerce Events Debugger</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 13px;
             background: #f4f4f4;
             color: #2c2c2c;
-            width: 480px;
-            min-height: 200px;
+            width: 340px;
         }
 
-        /* ── Header ── */
         .header {
             background: #FA7300;
             color: #fff;
@@ -34,317 +27,89 @@
             font-size: 18px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            flex-shrink: 0;
         }
 
         .header-title {
             font-size: 13px;
             font-weight: 600;
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .btn-clear {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
-            color: #fff;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .btn-clear:hover {
-            background: rgba(255,255,255,0.35);
-        }
-
-        /* ── Summary bar ── */
-        .summary-bar {
-            background: #fff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 8px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .summary-text {
-            font-size: 12px;
-            color: #555;
-            flex: 1;
-        }
-
-        .summary-text strong {
-            color: #2c2c2c;
-        }
-
-        .progress-track {
-            flex: 1;
-            height: 6px;
-            background: #e8e8e8;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #FA7300;
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        /* ── Scroll container ── */
-        .scroll-container {
-            max-height: 520px;
-            overflow-y: auto;
-        }
-
-        /* ── Section ── */
-        .section {
-            margin-bottom: 2px;
-        }
-
-        .section-header {
-            background: #ebebeb;
-            padding: 5px 14px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            color: #777;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        /* ── Event row ── */
-        .event-row {
-            background: #fff;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .event-summary {
-            display: flex;
-            align-items: center;
-            padding: 8px 14px;
-            cursor: pointer;
-            gap: 8px;
-            user-select: none;
-        }
-
-        .event-summary:hover {
-            background: #fafafa;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .status-dot.not-fired  { background: #ccc; }
-        .status-dot.ok         { background: #2DA562; }
-        .status-dot.issues     { background: #E68619; }
-        .status-dot.error      { background: #D7373F; }
-
-        .event-name {
-            flex: 1;
-            font-weight: 500;
-            font-size: 12px;
-        }
-
-        .event-meta {
-            font-size: 10px;
-            color: #888;
-        }
-
-        .event-count {
-            background: #FA7300;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            border-radius: 10px;
-            padding: 1px 6px;
-            min-width: 18px;
-            text-align: center;
-        }
-
-        .expand-icon {
-            font-size: 10px;
-            color: #aaa;
-            flex-shrink: 0;
-            transition: transform 0.15s;
-        }
-
-        .event-row.expanded .expand-icon {
-            transform: rotate(90deg);
-        }
-
-        /* ── Event detail ── */
-        .event-detail {
-            display: none;
-            padding: 0 14px 10px 30px;
-            border-top: 1px solid #f0f0f0;
-            background: #fafafa;
-        }
-
-        .event-row.expanded .event-detail {
-            display: block;
-        }
-
-        .detail-section-title {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #888;
-            margin: 8px 0 4px;
-        }
-
-        /* ── Context validation list ── */
-        .ctx-list {
-            list-style: none;
-        }
-
-        .ctx-item {
+        .content {
+            padding: 20px 18px 22px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            padding: 4px 0;
-            border-bottom: 1px solid #efefef;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+            background: #fff;
         }
 
-        .ctx-item:last-child {
-            border-bottom: none;
+        .icon { font-size: 36px; }
+
+        .message {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
         }
 
-        .ctx-header {
+        .steps {
+            width: 100%;
+            background: #f7f7f7;
+            border: 1px solid #e4e4e4;
+            border-radius: 6px;
+            padding: 12px 16px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .step-num {
+            background: #FA7300;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .ctx-icon {
-            font-size: 12px;
+            justify-content: center;
             flex-shrink: 0;
-            width: 14px;
-            text-align: center;
+            margin-top: 1px;
         }
 
-        .ctx-label {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .ctx-label.missing {
-            color: #D7373F;
-        }
-
-        .ctx-issues {
-            margin-left: 20px;
-            list-style: none;
-        }
-
-        .ctx-issue {
-            font-size: 11px;
-            color: #D7373F;
-            padding: 1px 0;
-        }
-
-        .ctx-issue::before {
-            content: '• ';
-        }
-
-        /* ── Raw data toggle ── */
-        .raw-toggle {
-            margin-top: 8px;
-            font-size: 11px;
-            color: #FA7300;
-            cursor: pointer;
-            text-decoration: underline;
+        kbd {
             display: inline-block;
-        }
-
-        .raw-data {
-            display: none;
-            margin-top: 6px;
-            background: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 8px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 10px;
-            color: #2c2c2c;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .raw-data.visible {
-            display: block;
-        }
-
-        /* ── Not-fired state ── */
-        .not-fired-hint {
-            font-size: 11px;
-            color: #aaa;
-            padding: 6px 0;
-            font-style: italic;
-        }
-
-        /* ── Footer ── */
-        .footer {
-            padding: 6px 14px;
             background: #fff;
-            border-top: 1px solid #e0e0e0;
-            font-size: 10px;
-            color: #aaa;
-            text-align: center;
-        }
-
-        /* ── Empty state ── */
-        .empty-state {
-            padding: 24px 14px;
-            text-align: center;
-            color: #aaa;
-            font-size: 12px;
-        }
-
-        .empty-state .icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        /* ── Occurrence tabs ── */
-        .occurrence-selector {
-            display: flex;
-            gap: 4px;
-            margin: 6px 0 4px;
-            flex-wrap: wrap;
-        }
-
-        .occ-btn {
-            font-size: 10px;
-            padding: 2px 7px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 3px;
-            background: #fff;
-            cursor: pointer;
-            color: #555;
+            padding: 0 5px;
+            font-family: inherit;
+            font-size: 11px;
+            color: #333;
+            line-height: 18px;
+            box-shadow: 0 1px 0 #bbb;
         }
 
-        .occ-btn.active {
+        .tab-label {
+            display: inline-block;
             background: #FA7300;
-            border-color: #FA7300;
             color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 3px;
+            padding: 1px 6px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -352,26 +117,26 @@
     <div class="header">
         <div class="header-logo">&#9679;</div>
         <div class="header-title">Commerce Events Debugger</div>
-        <button class="btn-clear" id="clearBtn">Clear</button>
     </div>
 
-    <div class="summary-bar">
-        <div class="summary-text" id="summaryText">Waiting for events…</div>
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    <div class="content">
+        <div class="icon">&#128295;</div>
+        <div class="message">All event debugging tools are available in the <strong>DevTools panel</strong>.</div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div>Open DevTools — press <kbd>F12</kbd> or <kbd>⌥⌘I</kbd></div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div>Select the <span class="tab-label">Commerce Events</span> tab</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div>Navigate your storefront page to capture events in real time</div>
+            </div>
         </div>
     </div>
-
-    <div class="scroll-container" id="scrollContainer">
-        <div class="empty-state" id="emptyState">
-            <div class="icon">&#128269;</div>
-            <div>Navigate a Commerce storefront page<br>to start capturing events.</div>
-        </div>
-    </div>
-
-    <div class="footer" id="footer"></div>
-
-    <script src="shared.js"></script>
-    <script src="popup.js"></script>
 </body>
 </html>

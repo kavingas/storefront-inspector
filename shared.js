@@ -114,12 +114,14 @@ const CONTEXT_VALIDATORS = {
         check(ctx, issues) {
             if (!Array.isArray(ctx.units)) return;
             ctx.units.forEach((unit, i) => {
-                if (!unit.unitId)   issues.push(`units[${i}].unitId is missing`);
-                if (!unit.unitName) issues.push(`units[${i}].unitName is missing`);
-                if (!unit.typeId)   issues.push(`units[${i}].typeId is missing`);
-                if (!Array.isArray(unit.products) || unit.products.length === 0) {
-                    issues.push(`units[${i}].products is empty or missing`);
-                }
+                if (!unit.unitId) issues.push(`units[${i}].unitId is missing`);
+                // Snowplow uses 'name'; ACDL uses 'unitName'
+                if (!unit.unitName && !unit.name) issues.push(`units[${i}].unitName is missing`);
+                // Snowplow uses 'recType'; ACDL uses 'typeId'
+                if (!unit.typeId && !unit.recType) issues.push(`units[${i}].typeId is missing`);
+                // Snowplow omits products array but provides itemsCount
+                const hasProducts = (Array.isArray(unit.products) && unit.products.length > 0) || unit.itemsCount > 0;
+                if (!hasProducts) issues.push(`units[${i}].products is empty or missing`);
             });
         }
     }
