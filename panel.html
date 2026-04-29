@@ -287,6 +287,34 @@
         }
         .ctx-issue::before { content: '• '; }
 
+        .ctx-data {
+            padding: 6px 10px 8px 32px;
+            background: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .ctx-field {
+            display: flex;
+            gap: 8px;
+            font-size: 11px;
+            padding: 2px 0;
+            border-bottom: 1px solid #f7f7f7;
+        }
+        .ctx-field:last-child { border-bottom: none; }
+        .ctx-field-key {
+            color: #777;
+            min-width: 140px;
+            flex-shrink: 0;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        }
+        .ctx-field-val {
+            color: #2c2c2c;
+            word-break: break-all;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        }
+
         /* ── URL row ── */
         .url-row {
             font-size: 11px;

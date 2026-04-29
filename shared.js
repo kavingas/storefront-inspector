@@ -94,7 +94,7 @@ const CONTEXT_VALIDATORS = {
     },
     orderContext: {
         label: 'Order',
-        requiredFields: ['orderId', 'grandTotal', 'orderType']
+        requiredFields: ['orderId']
     },
     changedProductsContext: {
         label: 'Changed Products',

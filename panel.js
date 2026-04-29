@@ -56,6 +56,34 @@ function hasAnyEvents() {
     return allEvents.length > 0 || networkEvents.length > 0;
 }
 
+function flattenContext(obj, prefix) {
+    if (!obj || typeof obj !== 'object') return [];
+    const rows = [];
+    for (const [k, v] of Object.entries(obj)) {
+        const fullKey = prefix ? `${prefix}.${k}` : k;
+        if (Array.isArray(v)) {
+            if (v.length === 0) {
+                rows.push([fullKey, '[]']);
+            } else if (v.every(item => item === null || typeof item !== 'object')) {
+                rows.push([fullKey, v.map(item => item == null ? '—' : String(item)).join(', ')]);
+            } else {
+                v.forEach((item, i) => {
+                    if (item !== null && typeof item === 'object') {
+                        rows.push(...flattenContext(item, `${fullKey}[${i}]`));
+                    } else {
+                        rows.push([`${fullKey}[${i}]`, item == null ? '—' : String(item)]);
+                    }
+                });
+            }
+        } else if (v !== null && typeof v === 'object') {
+            rows.push(...flattenContext(v, fullKey));
+        } else {
+            rows.push([fullKey, v == null ? '—' : String(v)]);
+        }
+    }
+    return rows;
+}
+
 // ── Sidebar rendering ────────────────────────────────────────────────────────
 
 function renderSidebar(eventMap) {
@@ -206,6 +234,7 @@ function renderMain(eventMap) {
     scroll.className = 'detail-scroll';
 
     const occIdx = selectedOccurrenceIndex[ec.id] ?? occs.length - 1;
+
     const occ    = occs[occIdx];
     const { contextResults } = validateEvent(ec, occ.eventInfo || {});
 
@@ -217,7 +246,7 @@ function renderMain(eventMap) {
     const grid = document.createElement('div');
     grid.className = 'ctx-grid';
 
-    for (const { label, present, issues } of contextResults) {
+    for (const { key, label, present, issues } of contextResults) {
         const card = document.createElement('div');
         card.className = 'ctx-card ' + (!present ? 'error' : issues.length > 0 ? 'warning' : 'ok');
 
@@ -253,6 +282,29 @@ function renderMain(eventMap) {
                 issueBlock.appendChild(p);
             }
             card.appendChild(issueBlock);
+        }
+
+        if (present) {
+            const ctxData = occ.eventInfo[key];
+            const rows = flattenContext(ctxData);
+            if (rows.length > 0) {
+                const dataBlock = document.createElement('div');
+                dataBlock.className = 'ctx-data';
+                for (const [k, v] of rows) {
+                    const row = document.createElement('div');
+                    row.className = 'ctx-field';
+                    const keyEl = document.createElement('span');
+                    keyEl.className = 'ctx-field-key';
+                    keyEl.textContent = k;
+                    const valEl = document.createElement('span');
+                    valEl.className = 'ctx-field-val';
+                    valEl.textContent = v;
+                    row.appendChild(keyEl);
+                    row.appendChild(valEl);
+                    dataBlock.appendChild(row);
+                }
+                card.appendChild(dataBlock);
+            }
         }
 
         grid.appendChild(card);
@@ -456,6 +508,11 @@ function parseSnowplowParams(params) {
     // A standard Snowplow page view (e=pv) with product context is a product-page-view
     if (eventName === 'page-view' && eventInfo.productContext) {
         eventName = 'product-page-view';
+    }
+
+    // place-order sends the order increment ID in se_la rather than an order context schema
+    if (eventName === 'place-order' && !eventInfo.orderContext && params.get('se_la')) {
+        eventInfo.orderContext = { orderId: params.get('se_la') };
     }
 
     // Snowplow has no "page" context schema — derive pageType from the event name
