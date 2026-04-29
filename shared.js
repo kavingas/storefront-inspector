@@ -20,7 +20,7 @@ const EVENT_GROUPS = [
                 id: 'add-to-cart',
                 label: 'Add to Cart',
                 acdlEvent: 'add-to-cart',
-                contexts: ['pageContext', 'storefrontInstanceContext', 'productContext', 'shoppingCartContext', 'changedProductsContext']
+                contexts: ['pageContext', 'storefrontInstanceContext', 'productContext', 'shoppingCartContext']
             },
             {
                 id: 'place-order',
@@ -79,14 +79,18 @@ const CONTEXT_VALIDATORS = {
             // pricing is present in ACDL events but absent from the Snowplow product schema
             if (ctx.pricing) {
                 if (ctx.pricing.regularPrice == null) issues.push('pricing.regularPrice is missing');
-                if (!ctx.pricing.currencyCode) issues.push('pricing.currencyCode is missing');
+                if (ctx.pricing.currencyCode !== null && !ctx.pricing.currencyCode) issues.push('pricing.currencyCode is missing');
             }
         }
     },
     shoppingCartContext: {
         label: 'Shopping Cart',
-        requiredFields: ['id', 'totalQuantity'],
-        nonEmptyArrays: ['items']
+        nonEmptyArrays: ['items'],
+        check(ctx, issues) {
+            // ACDL uses 'id'/'totalQuantity'; Snowplow schema uses 'cartId'/'itemsCount'
+            if (ctx.id == null && ctx.cartId == null) issues.push('id (or cartId) is missing');
+            if (ctx.totalQuantity == null && ctx.itemsCount == null) issues.push('totalQuantity (or itemsCount) is missing');
+        }
     },
     orderContext: {
         label: 'Order',

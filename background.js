@@ -92,15 +92,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // ── Tab lifecycle ─────────────────────────────────────────────────────────────
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    if (changeInfo.status === 'loading' && !changeInfo.url?.startsWith('chrome')) {
-        clearTabEvents(tabId).then(() => {
-            updateBadge(tabId);
-            forwardToPanel(tabId, { type: 'EVENTS_CLEARED' });
-        });
-    }
-});
-
 chrome.tabs.onRemoved.addListener(tabId => {
     clearTabEvents(tabId);
     devtoolsPorts.delete(tabId);

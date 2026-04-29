@@ -117,7 +117,7 @@ chrome-extension/
 
 - Storage: `chrome.storage.session`, key `tab_events_<tabId>`
 - One DevTools port per tab stored in `devtoolsPorts` Map
-- Tab navigation (`tabs.onUpdated` with `status === 'loading'`) auto-clears events and sends `EVENTS_CLEARED` to panel
+- Events accumulate across page navigations and persist until the user clicks Clear or the tab is closed
 - Badge text = count of unique event names seen on the tab
 
 **Message types:**
@@ -152,7 +152,7 @@ The extension requires no build step — all files are plain JS loaded directly.
 - **Dual capture** — ACDL and Snowplow network capture run independently; same event may appear from both if both channels are active
 - **Separate `networkEvents` array** — avoids a race condition: the `GET_EVENTS` response from background overwrites `allEvents` on init; Snowplow events stored separately survive this
 - **No webRequest permission** — network capture uses `chrome.devtools.network` which is permission-free and provides full POST bodies; `webRequest` cannot read POST bodies in MV3
-- **Session storage** — ACDL events persist across panel close/reopen within the same browser session but clear on tab navigation
+- **Session storage** — ACDL events persist across panel close/reopen and page navigations within the same browser session; cleared only on explicit Clear or tab close
 
 ---
 

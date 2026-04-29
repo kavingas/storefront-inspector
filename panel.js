@@ -25,6 +25,7 @@ port.onMessage.addListener(msg => {
         allEvents = [];
         networkEvents = [];
         selectedOccurrenceIndex = {};
+        selectedEventId = null;
         render();
     }
 });
@@ -428,7 +429,12 @@ function parseSnowplowParams(params) {
     if (!eventName) {
         const e = params.get('e');
         if (e === 'pv') eventName = 'page-view';
-        else if (e === 'se') eventName = params.get('se_ac') || params.get('se_ca') || null;
+        else if (e === 'se') {
+            const cat = params.get('se_ca');
+            const act = params.get('se_ac');
+            if (cat === 'product' && act === 'view') eventName = 'product-page-view';
+            else eventName = act || cat || null;
+        }
     }
 
     // Contexts — cx is base64url, co is plain JSON
@@ -445,6 +451,11 @@ function parseSnowplowParams(params) {
                 }
             } catch (_) {}
         }
+    }
+
+    // A standard Snowplow page view (e=pv) with product context is a product-page-view
+    if (eventName === 'page-view' && eventInfo.productContext) {
+        eventName = 'product-page-view';
     }
 
     // Snowplow has no "page" context schema — derive pageType from the event name
@@ -514,12 +525,12 @@ chrome.devtools.network.onRequestFinished.addListener(entry => {
 // ── Controls ─────────────────────────────────────────────────────────────────
 
 document.getElementById('clearBtn').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'CLEAR_EVENTS', tabId }, () => {
-        allEvents = [];
-        networkEvents = [];
-        selectedOccurrenceIndex = {};
-        render();
-    });
+    allEvents = [];
+    networkEvents = [];
+    selectedOccurrenceIndex = {};
+    selectedEventId = null;
+    render();
+    chrome.runtime.sendMessage({ type: 'CLEAR_EVENTS', tabId });
 });
 
 render();
