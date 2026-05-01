@@ -2,7 +2,7 @@
 
 const EVENT_GROUPS = [
     {
-        group: 'Adobe Commerce Events',
+        group: 'Catalog & Purchase Events',
         events: [
             {
                 id: 'page-view',
@@ -31,7 +31,7 @@ const EVENT_GROUPS = [
         ]
     },
     {
-        group: 'Recommendations Events',
+        group: 'Recommendations Tracking Events',
         events: [
             {
                 id: 'recs-unit-render',
