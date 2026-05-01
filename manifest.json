@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Commerce Events Debugger",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Verifies Adobe Commerce storefront events and Product Recommendation events including data integrity",
     "icons": {
         "16": "icons/icon16.png",
