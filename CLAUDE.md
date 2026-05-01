@@ -156,6 +156,45 @@ The extension requires no build step — all files are plain JS loaded directly.
 
 ---
 
+## Release Process
+
+### 1. Bump the version
+
+Update `manifest.json` → `"version"` field (e.g. `"1.0.2"`).
+
+### 2. Package
+
+```bash
+bash package.sh
+```
+
+This creates `commerce-events-debugger-v<version>.zip` in the project root.
+
+### 3. GitHub release
+
+Create a new GitHub release tagged `v<version>` and attach the ZIP as a release asset.
+
+### 4. Update the Confluence wiki page
+
+**Page ID:** `3865561181` (namespace: `ceng`)
+**Tool:** `mcp__wiki__update_confluence_article`
+
+Steps:
+1. Fetch the current page first with `mcp__wiki__get_confluence_page` (page ID `3865561181`) to confirm the current version number and content.
+2. Write a `.wiki` file (e.g. `/tmp/wiki-update.wiki`) containing the full updated page body in **Atlassian Confluence wiki markup** — not HTML/storage format. Key syntax:
+   - Headings: `h2.`, `h3.`
+   - Bold: `*text*`, inline code: `{{text}}`
+   - Links: `[label|url]`
+   - Tables: `||header||` rows, `|cell|` rows
+   - Macros: `{info}...{info}`, `{panel:title=...|borderColor=...}...{panel}`, `{expand:title=...}...{expand}`
+   - Emoticons: `(/)` = tick, `(x)` = cross, `\\` = line break inside a list item
+3. In the wiki file, make two updates:
+   - **Install section (Step 1):** update the ZIP filename and folder name to the new version.
+   - **Release history table:** prepend a new row for the new version with the date (`YYYY-MM-DD`) and a plain-English summary of what changed.
+4. Call `mcp__wiki__update_confluence_article` with `page_id=3865561181` and the absolute path to the `.wiki` file.
+
+---
+
 ## Snowplow Payload Decoding Reference
 
 ```
