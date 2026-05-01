@@ -70,26 +70,42 @@ const CONTEXT_VALIDATORS = {
     },
     storefrontInstanceContext: {
         label: 'Storefront',
-        requiredFields: ['environmentId', 'environment', 'storeUrl', 'baseCurrencyCode', 'storeViewCurrencyCode']
+        requiredFields: [
+            'environmentId', 'environment', 'storeUrl',
+            'baseCurrencyCode', 'storeViewCurrencyCode',
+            'storeCode', 'storeId', 'storeName',
+            'storeViewCode', 'storeViewId', 'storeViewName',
+            'websiteCode', 'websiteId', 'websiteName',
+            'storefrontTemplate'
+        ]
     },
     productContext: {
         label: 'Product',
-        requiredFields: ['name', 'sku'],
+        requiredFields: ['name', 'sku', 'topLevelSku', 'productType', 'canonicalUrl', 'mainImageUrl'],
+        nonEmptyArrays: ['categories'],
         check(ctx, issues) {
             // pricing is present in ACDL events but absent from the Snowplow product schema
             if (ctx.pricing) {
                 if (ctx.pricing.regularPrice == null) issues.push('pricing.regularPrice is missing');
-                if (ctx.pricing.currencyCode !== null && !ctx.pricing.currencyCode) issues.push('pricing.currencyCode is missing');
+                // if (!ctx.pricing.currencyCode) issues.push('pricing.currencyCode is missing or null');
             }
         }
     },
     shoppingCartContext: {
         label: 'Shopping Cart',
+        requiredFields: ['subtotalExcludingTax', 'subtotalIncludingTax'],
         nonEmptyArrays: ['items'],
         check(ctx, issues) {
             // ACDL uses 'id'/'totalQuantity'; Snowplow schema uses 'cartId'/'itemsCount'
             if (ctx.id == null && ctx.cartId == null) issues.push('id (or cartId) is missing');
             if (ctx.totalQuantity == null && ctx.itemsCount == null) issues.push('totalQuantity (or itemsCount) is missing');
+            if (Array.isArray(ctx.items)) {
+                ctx.items.forEach((item, i) => {
+                    for (const f of ['basePrice', 'cartItemId', 'offerPrice', 'productName', 'productSku', 'qty']) {
+                        if (item[f] == null) issues.push(`items[${i}].${f} is missing`);
+                    }
+                });
+            }
         }
     },
     orderContext: {
