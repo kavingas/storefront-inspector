@@ -104,6 +104,7 @@ const CONTEXT_VALIDATORS = {
                     for (const f of ['basePrice', 'cartItemId', 'offerPrice', 'productName', 'productSku', 'qty']) {
                         if (item[f] == null) issues.push(`items[${i}].${f} is missing`);
                     }
+                    if (item.qty != null && !Number.isInteger(item.qty)) issues.push(`items[${i}].qty must be an integer`);
                 });
             }
         }
@@ -120,6 +121,7 @@ const CONTEXT_VALIDATORS = {
                 ctx.items.forEach((item, i) => {
                     if (!item.product) issues.push(`items[${i}].product is missing`);
                     if (item.quantity == null) issues.push(`items[${i}].quantity is missing`);
+                    else if (!Number.isInteger(item.quantity)) issues.push(`items[${i}].quantity must be an integer`);
                 });
             }
         }
