@@ -380,6 +380,25 @@
             padding: 1px 6px;
         }
 
+        /* ── Color legend ── */
+        .legend-strip {
+            display: flex;
+            gap: 12px;
+            padding: 6px 12px;
+            background: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            color: #555;
+            white-space: nowrap;
+        }
+
         /* ── Status bar (bottom) ── */
         .status-bar {
             padding: 5px 16px;
@@ -411,6 +430,11 @@
     <div class="body">
         <!-- Sidebar: event list -->
         <div class="sidebar">
+            <div class="legend-strip">
+                <span class="legend-item"><span class="status-dot ok" style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:#2DA562;display:inline-block"></span> Valid</span>
+                <span class="legend-item"><span class="status-dot issues" style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:#E68619;display:inline-block"></span> Has issues</span>
+                <span class="legend-item"><span class="status-dot not-fired" style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:#ccc;display:inline-block"></span> Not seen</span>
+            </div>
             <div class="sidebar-scroll" id="sidebarScroll"></div>
         </div>
 
