@@ -14,7 +14,31 @@ let selectedOccurrenceIndex = {};
 
 const tabId = chrome.devtools.inspectedWindow.tabId;
 
-document.getElementById('versionBadge').textContent = 'v' + chrome.runtime.getManifest().version;
+const installedVersion = chrome.runtime.getManifest().version;
+document.getElementById('versionBadge').textContent = 'v' + installedVersion;
+
+(function checkForUpdate() {
+    fetch('https://api.github.com/repos/kavingas/storefront-inspector/releases/latest')
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (!data || !data.tag_name) return;
+            const latest = data.tag_name.replace(/^v/, '');
+            const toNum = v => v.split('.').map(Number);
+            const [la, lb, lc] = toNum(latest);
+            const [ia, ib, ic] = toNum(installedVersion);
+            const isOlder = la > ia || (la === ia && lb > ib) || (la === ia && lb === ib && lc > ic);
+            if (!isOlder) return;
+            const banner = document.getElementById('updateBanner');
+            document.getElementById('updateBannerMsg').innerHTML =
+                `A newer version <strong>v${latest}</strong> is available. — <a href="${data.html_url}" target="_blank">Download</a>`;
+            banner.style.display = 'flex';
+            document.getElementById('updateBannerDismiss').addEventListener('click', () => {
+                banner.style.display = 'none';
+            });
+        })
+        .catch(() => {});
+})();
+
 const port = chrome.runtime.connect({ name: 'devtools-panel' });
 port.postMessage({ type: 'INIT', tabId });
 

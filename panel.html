@@ -399,6 +399,33 @@
             white-space: nowrap;
         }
 
+        /* ── Update banner ── */
+        .update-banner {
+            background: #FFF3CD;
+            border-bottom: 1px solid #FBBF24;
+            padding: 5px 16px;
+            font-size: 11px;
+            color: #7C5000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .update-banner a {
+            color: #FA7300;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .update-banner a:hover { text-decoration: underline; }
+        .update-banner-dismiss {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            opacity: 0.6;
+        }
+        .update-banner-dismiss:hover { opacity: 1; }
+
         /* ── Status bar (bottom) ── */
         .status-bar {
             padding: 5px 16px;
@@ -424,6 +451,12 @@
             <div class="progress-fill" id="progressFill" style="width:0%"></div>
         </div>
         <button class="btn" id="clearBtn">Clear</button>
+    </div>
+
+    <!-- Update banner (hidden until an update is detected) -->
+    <div class="update-banner" id="updateBanner" style="display:none">
+        <span id="updateBannerMsg"></span>
+        <span class="update-banner-dismiss" id="updateBannerDismiss" title="Dismiss">&#x2715;</span>
     </div>
 
     <!-- Body -->
