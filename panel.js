@@ -13,6 +13,8 @@ let selectedOccurrenceIndex = {};
 // ── Background connection ────────────────────────────────────────────────────
 
 const tabId = chrome.devtools.inspectedWindow.tabId;
+
+document.getElementById('versionBadge').textContent = 'v' + chrome.runtime.getManifest().version;
 const port = chrome.runtime.connect({ name: 'devtools-panel' });
 port.postMessage({ type: 'INIT', tabId });
 
