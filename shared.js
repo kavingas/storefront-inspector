@@ -77,7 +77,13 @@ const CONTEXT_VALIDATORS = {
             'storeViewCode', 'storeViewId', 'storeViewName',
             'websiteCode', 'websiteId', 'websiteName',
             'storefrontTemplate'
-        ]
+        ],
+        check(ctx, errors) {
+            const valid = ['Production', 'Testing'];
+            if (ctx.environment !== undefined && !valid.includes(ctx.environment)) {
+                errors.push(`environment "${ctx.environment}" is invalid — must be "Production" or "Testing"`);
+            }
+        }
     },
     productContext: {
         label: 'Product',
